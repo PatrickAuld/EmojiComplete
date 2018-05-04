@@ -3,7 +3,7 @@
 set -e
 
 HAMMER_DIR="$HOME/.hammerspoon"
-INSTALL_DIR="$HAMMER_DIR/anycomplete"
+INSTALL_DIR="$HAMMER_DIR/emojicomplete"
 INIT_FILE="$HAMMER_DIR/init.lua"
 
 if [ ! -d "$HAMMER_DIR" ]; then
@@ -18,13 +18,13 @@ if [ ! -d "$HAMMER_DIR" ]; then
 fi
 
 if [ -d "$INSTALL_DIR" ]; then
-  echo "Anycomplete is already installed into $INSTALL_DIR"
+  echo "Emojicomplete is already installed into $INSTALL_DIR"
   exit 1
 fi
 
-git clone https://github.com/nathancahill/Anycomplete.git "$INSTALL_DIR"
+git clone https://github.com/PatrickAuld/EmojiComplete.git "$INSTALL_DIR"
 cat "$INSTALL_DIR/init.lua" >> "$INIT_FILE"
 
 echo ""
-echo "Anycomplete has been installed into $INSTALL_DIR"
+echo "Emojiomplete has been installed into $INSTALL_DIR"
 echo "Edit $INIT_FILE to change the default keybinding"
