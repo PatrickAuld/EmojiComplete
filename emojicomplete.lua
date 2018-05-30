@@ -56,8 +56,10 @@ function mod.emojicomplete()
             if not ok then return end
             choices = hs.fnutils.imap(results["results"], function(result)
                 local hex = tonumber(result.Code, 16)
+                local name = result.Name:gsub("(%l)(%w*)", function(a,b) return string.upper(a)..b end)
                 return {
                     ["text"] = utf8.char(hex),
+                    ["subText"] = name,
                 }
             end)
 
