@@ -3,7 +3,7 @@ log = hs.logger.new('emojicomplete', 'info')
 
 -- Emojicomplete
 function mod.emojicomplete()
-    local EMOJI_ENDPOINT = 'https://emojifinder.com/ajax.php?action=search&query=%s'
+    local EMOJI_ENDPOINT = 'https://emojifinder.com/*/ajax.php?action=search&query=%s'
     local current = hs.application.frontmostApplication()
     local tab = nil
     local copy = nil
