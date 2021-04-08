@@ -3,7 +3,8 @@ log = hs.logger.new('emojicomplete', 'info')
 
 -- Emojicomplete
 function mod.emojicomplete()
-    local EMOJI_ENDPOINT = 'https://emojifinder.com/ajax.php?action=search&query=%s'
+    local EMOJI_ENDPOINT = 'https://emoji-api.com/emojis?search=%s&access_key=%s'
+    local API_KEY = ''
     local current = hs.application.frontmostApplication()
     local tab = nil
     local copy = nil
@@ -48,15 +49,23 @@ function mod.emojicomplete()
         local query = hs.http.encodeForQuery(string)
         -- Reset list when no query is given
         if string:len() == 0 then return reset() end
-
-        hs.http.asyncGet(string.format(EMOJI_ENDPOINT, query), nil, function(status, data)
+        
+        hs.http.asyncGet(string.format(EMOJI_ENDPOINT, query, API_KEY), nil, function(status, data)
             if not data then return end
-
+            --log.i(data)
             local ok, results = pcall(function() return hs.json.decode(data) end)
             if not ok then return end
-            choices = hs.fnutils.imap(results["results"], function(result)
-                local hex = tonumber(result.Code, 16)
-                local name = string.lower(result.Name):gsub("^%l", string.upper)
+            local count = 20
+            local reducedResults = hs.fnutils.ifilter(results, function(result)
+                count = count - 1
+                if count >= 0 then return true else return false end
+            end)
+
+            choices = hs.fnutils.imap(reducedResults, function(result)
+                local hex = tonumber(result.codePoint, 16)
+                local name = string.lower(result.unicodeName):gsub("^%l", string.upper)
+                if not hex or not name then return nil end
+                
                 return {
                     ["text"] = utf8.char(hex),
                     ["subText"] = name,
@@ -67,7 +76,13 @@ function mod.emojicomplete()
         end)
     end
 
-    chooser:queryChangedCallback(updateChooser)
+    delayedUpdater = hs.timer.delayed.new(0.1, updateChooser)
+    
+    function delayedUpdateChooser()
+        delayedUpdater.start()
+    end
+
+    chooser:queryChangedCallback(delayedUpdateChooser)
 
     chooser:searchSubText(false)
 
